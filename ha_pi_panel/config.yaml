@@ -1,7 +1,7 @@
 name: HAOS OLED Info display
 slug: haos_oled_display
 description: OLED status display for Home Assistant OS, intended for Raspberry Pi hosts.
-version: 0.1.0
+version: 0.1.1
 url: https://github.com/oipy-poipy/HAOS-OLED-Display.git
 arch:
   - aarch64

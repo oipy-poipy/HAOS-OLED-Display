@@ -179,7 +179,9 @@ def show(device, lines):
 
             log_content_drawn += f"{left}\t{right}\n"
 
-    logging.info("Drawing text on screen: %s", log_content_drawn)
+    log_separator = ("-" * 12)
+
+    logging.info("Drawing text on screen:\n%s\n%s\n%s", log_separator, log_content_drawn, log_separator)
 
 
 def main():
