@@ -5,10 +5,10 @@ FROM ghcr.io/home-assistant/aarch64-base:3.22
 RUN apk add --no-cache python3 \
     && python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir \
-      luma.core==2.4.2 \
-      luma.oled==3.14.0 \
-      pillow==11.2.1 \
-      smbus2==0.5.0
+      luma.core==2.6.0 \
+      luma.oled==3.16.0 \
+      pillow==12.3.0 \
+      smbus2==0.6.1
 
 COPY panel.py /
 # s6-overlay starts CMD with an empty environment; with-contenv restores SUPERVISOR_TOKEN and TZ.
