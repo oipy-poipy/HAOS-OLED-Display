@@ -190,11 +190,11 @@ def show(device, lines):
 
 
 def main():
+    options = json.loads(Path("/data/options.json").read_text())
     logging.basicConfig(
         level=getattr(logging, options["log_level"]),
         format="%(asctime)s %(levelname)s %(message)s",
     )
-    options = json.loads(Path("/data/options.json").read_text())
     pages = json.loads(options["display_pages_json"])
     driver, size = options["display_type"].split("_")  # For example ssd1306_128x64.
     width, height = map(int, size.split("x"))

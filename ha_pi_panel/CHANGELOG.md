@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+Fix logging config getter.
+
 ## 0.1.3
 
 Add the logging level option.
