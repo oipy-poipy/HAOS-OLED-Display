@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+Add the logging level option.
+
 ## 0.1.2
 
 Fixed a missing dot in "Out. Temp."

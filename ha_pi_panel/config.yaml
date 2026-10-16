@@ -1,7 +1,7 @@
 name: HAOS OLED Info display
 slug: haos_oled_display
 description: OLED status display for Home Assistant OS, intended for Raspberry Pi hosts.
-version: 0.1.2
+version: 0.1.3
 url: https://github.com/oipy-poipy/HAOS-OLED-Display.git
 arch:
   - aarch64
@@ -21,6 +21,7 @@ options:
   display_page_seconds: 6
   display_pages_json: >-
     [{"name":"System","lines":["#{hostname}\t{clock}","CPU\t{cpu_temp_c}°C","RAM\t{mem_percent}%","Disk\t{disk_percent}%"]},{"name":"Network","lines":["#Network\t{clock}","IP\t{ip}","Up\t{uptime_short}","Load\t{cpu_load_1m}%"]},{"name":"Home","lines":["#Home\t{clock}","Out. Temp.\t{ha:sensor.balcony_temperature_sensor_temperature,weather.forecast_home@temperature}{ha:sensor.balcony_temperature_sensor_temperature@unit_of_measurement,weather.forecast_home@temperature_unit}","Out. Humid.\t{ha:sensor.balcony_temperature_sensor_humidity,weather.forecast_home@humidity}%","Out. Wind\t{ha:weather.forecast_home@wind_speed}{ha:weather.forecast_home@wind_speed_unit}"]}]
+  log_level: INFO
 schema:
   display_type: list(ssd1306_128x64|ssd1306_128x32|sh1106_128x64)
   display_i2c_address: str
@@ -28,3 +29,4 @@ schema:
   display_contrast: int(0,255)
   display_page_seconds: int(1,300)
   display_pages_json: str
+  log_level: list(DEBUG|INFO|WARNING|ERROR|CRITICAL)

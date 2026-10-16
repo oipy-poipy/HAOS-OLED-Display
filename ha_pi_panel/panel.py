@@ -179,14 +179,20 @@ def show(device, lines):
 
             log_content_drawn += f"{left}\t{right}\n"
 
-    log_separator = ("-" * 12)
+    log_separator = "-" * 12
 
-    logging.info("Drawing text on screen:\n%s\n%s\n%s", log_separator, log_content_drawn, log_separator)
+    logging.debug(
+        "Drawing text on screen:\n%s\n%s\n%s",
+        log_separator,
+        log_content_drawn,
+        log_separator,
+    )
 
 
 def main():
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+        level=getattr(logging, options["log_level"]),
+        format="%(asctime)s %(levelname)s %(message)s",
     )
     options = json.loads(Path("/data/options.json").read_text())
     pages = json.loads(options["display_pages_json"])
