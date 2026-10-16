@@ -51,6 +51,8 @@ Tokens in curly braces are filled in each time a page is shown:
 | `{cpu_temp_c}`, `{cpu_load_1m}`   | CPU temperature and 1 minute load average       |
 | `{mem_percent}`, `{disk_percent}` | Memory and disk usage in percent                |
 
+*Note - I like showing the load as %, so instead of 0.1 it will be 10%, 2.0 will be 200% and so on.*
+
 Home Assistant entities use `{ha:<entity_id>[@<attribute>][,<fallback>...][|<format>]}`:
 
 - `{ha:sensor.outdoor_temperature}` shows the state.

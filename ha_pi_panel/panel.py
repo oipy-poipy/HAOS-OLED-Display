@@ -89,7 +89,8 @@ TOKENS = {
     "date": lambda: time.strftime("%Y-%m-%d"),
     "uptime_short": uptime,
     "cpu_temp_c": lambda: f"{int(Path('/sys/class/thermal/thermal_zone0/temp').read_text()) / 1000:.1f}",
-    "cpu_load_1m": lambda: f"{os.getloadavg()[0]:.2f}",
+    # 0.45424 -> 45.424 -> 45.4%
+    "cpu_load_1m": lambda: f"{os.getloadavg()[0]*100:.1f}",
     "mem_percent": mem_percent,
     "disk_percent": disk_percent,
 }
