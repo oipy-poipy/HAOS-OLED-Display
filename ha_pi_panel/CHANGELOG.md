@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+Fixed a missing dot in "Out. Temp."
+
 ## 0.1.1
 
 Updated the way the content being drawn on the screen is displayed in the log.
