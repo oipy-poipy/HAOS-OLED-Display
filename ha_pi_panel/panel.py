@@ -24,17 +24,30 @@ FONT = ImageFont.load_default(10)
 TOKEN = re.compile(r"\{(ha:[^}]+|\w+)\}")
 # Home Assistant weather states are machine readable, not display ready.
 WEATHER = {
-    "clear-night": "Clear", "cloudy": "Cloudy", "exceptional": "Alert", "fog": "Fog", "hail": "Hail",
-    "lightning": "Storm", "lightning-rainy": "Storm/rain", "partlycloudy": "Part cloud",
-    "pouring": "Heavy rain", "rainy": "Rain", "snowy": "Snow", "snowy-rainy": "Sleet",
-    "sunny": "Sunny", "windy": "Windy", "windy-variant": "Windy",
+    "clear-night": "Clear",
+    "cloudy": "Cloudy",
+    "exceptional": "Alert",
+    "fog": "Fog",
+    "hail": "Hail",
+    "lightning": "Storm",
+    "lightning-rainy": "Storm/rain",
+    "partlycloudy": "Part cloud",
+    "pouring": "Heavy rain",
+    "rainy": "Rain",
+    "snowy": "Snow",
+    "snowy-rainy": "Sleet",
+    "sunny": "Sunny",
+    "windy": "Windy",
+    "windy-variant": "Windy",
 }
 
 
 def supervisor(path):
     """GET a Supervisor API path. Paths under /core/api/ are proxied to Home Assistant."""
     token = os.environ["SUPERVISOR_TOKEN"]
-    request = urllib.request.Request("http://supervisor" + path, headers={"Authorization": f"Bearer {token}"})
+    request = urllib.request.Request(
+        "http://supervisor" + path, headers={"Authorization": f"Bearer {token}"}
+    )
     with urllib.request.urlopen(request, timeout=5) as response:
         return json.load(response)
 
@@ -55,8 +68,12 @@ def uptime():
 
 
 def mem_percent():
-    info = dict(line.split(":") for line in Path("/proc/meminfo").read_text().splitlines())
-    total, available = (int(info[key].split()[0]) for key in ("MemTotal", "MemAvailable"))
+    info = dict(
+        line.split(":") for line in Path("/proc/meminfo").read_text().splitlines()
+    )
+    total, available = (
+        int(info[key].split()[0]) for key in ("MemTotal", "MemAvailable")
+    )
     return round(100 * (total - available) / total)
 
 
@@ -93,8 +110,11 @@ def entity(entity_id):
 
 def ha_value(spec):
     """Resolve "entity[@attribute],fallback...|format" to the first usable value."""
+
     refs, _, fmt = spec.partition("|")
-    digits = fmt[:1] if fmt[:1].isdigit() else ""  # "|1°C" rounds to one decimal and appends °C.
+    digits = (
+        fmt[:1] if fmt[:1].isdigit() else ""
+    )  # "|1°C" rounds to one decimal and appends °C.
     for ref in refs.split(","):
         entity_id, _, attribute = ref.strip().partition("@")
         state = entity(entity_id)
@@ -105,7 +125,7 @@ def ha_value(spec):
             continue
         if digits:
             value = f"{float(value):.{digits}f}"
-        return WEATHER.get(value, value) + fmt[len(digits):]
+        return WEATHER.get(value, value) + fmt[len(digits) :]
     return "--"
 
 
@@ -115,7 +135,9 @@ def fill(text):
     def value(match):
         token = match[1]
         try:
-            return ha_value(token[3:]) if token.startswith("ha:") else str(TOKENS[token]())
+            return (
+                ha_value(token[3:]) if token.startswith("ha:") else str(TOKENS[token]())
+            )
         except Exception as error:
             warn_once(f"Cannot show {{{token}}}: {error!r}")
             return "--"
@@ -131,22 +153,38 @@ def fit(draw, text, width):
 
 
 def show(device, lines):
-    row_height = 10 if device.height <= 32 else 12  # 3 rows on a 32 pixel display, 5 on a 64 pixel one.
+    log_content_drawn = ""
+
+    row_height = (
+        10 if device.height <= 32 else 12
+    )  # 3 rows on a 32 pixel display, 5 on a 64 pixel one.
     with canvas(device) as draw:
         for row, line in enumerate(lines[: device.height // row_height]):
             top, ink = row * row_height, "white"
             if line.startswith("#"):  # A header: dark text on a light bar.
                 line, ink = line[1:], "black"
-                draw.rectangle((0, top, device.width - 1, top + row_height - 1), fill="white")
-            left, _, right = line.partition("\t")  # A tab right-aligns the rest of the line.
+                draw.rectangle(
+                    (0, top, device.width - 1, top + row_height - 1), fill="white"
+                )
+            left, _, right = line.partition(
+                "\t"
+            )  # A tab right-aligns the rest of the line.
             right = fit(draw, fill(right), device.width - 4)
-            left = fit(draw, fill(left), device.width - 8 - draw.textlength(right, font=FONT))
+            left = fit(
+                draw, fill(left), device.width - 8 - draw.textlength(right, font=FONT)
+            )
             draw.text((2, top), left, font=FONT, fill=ink)
             draw.text((device.width - 2, top), right, font=FONT, fill=ink, anchor="ra")
 
+            log_content_drawn += f"{left}\t{right}\n"
+
+    logging.info("Drawing text on screen: %s", log_content_drawn)
+
 
 def main():
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
     options = json.loads(Path("/data/options.json").read_text())
     pages = json.loads(options["display_pages_json"])
     driver, size = options["display_type"].split("_")  # For example ssd1306_128x64.

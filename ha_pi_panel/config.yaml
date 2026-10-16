@@ -1,4 +1,4 @@
-name: HA Pi Panel
+name: HAOS OLED Info display
 slug: ha_pi_panel
 description: OLED status display for Home Assistant OS on Raspberry Pi.
 version: 0.3.0
@@ -20,7 +20,7 @@ options:
   display_contrast: 128
   display_page_seconds: 6
   display_pages_json: >-
-    [{"name":"System","lines":["#{hostname}\t{clock}","CPU\t{cpu_temp_c}°C","RAM\t{mem_percent}%","Disk\t{disk_percent}%"]},{"name":"Network","lines":["#Network\t{clock}","IP\t{ip}","Up\t{uptime_short}","Load\t{cpu_load_1m}"]},{"name":"Home","lines":["#Home\t{clock}","Out\t{ha:sensor.balcony_temperature_sensor_temperature,weather.forecast_home@temperature}{ha:sensor.balcony_temperature_sensor_temperature@unit_of_measurement,weather.forecast_home@temperature_unit}","Hum\t{ha:sensor.balcony_temperature_sensor_humidity,weather.forecast_home@humidity}%","Wind\t{ha:weather.forecast_home@wind_speed}{ha:weather.forecast_home@wind_speed_unit}"]}]
+    [{"name":"System","lines":["#{hostname}\t{clock}","CPU\t{cpu_temp_c}°C","RAM\t{mem_percent}%","Disk\t{disk_percent}%"]},{"name":"Network","lines":["#Network\t{clock}","IP\t{ip}","Up\t{uptime_short}","Load\t{cpu_load_1m}"]},{"name":"Home","lines":["#Home\t{clock}","Out. Temp\t{ha:sensor.balcony_temperature_sensor_temperature,weather.forecast_home@temperature}{ha:sensor.balcony_temperature_sensor_temperature@unit_of_measurement,weather.forecast_home@temperature_unit}","Out. Humid.\t{ha:sensor.balcony_temperature_sensor_humidity,weather.forecast_home@humidity}%","Out. Wind\t{ha:weather.forecast_home@wind_speed}{ha:weather.forecast_home@wind_speed_unit}"]}]
 schema:
   display_type: list(ssd1306_128x64|ssd1306_128x32|sh1106_128x64)
   display_i2c_address: str

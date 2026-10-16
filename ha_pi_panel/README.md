@@ -1,4 +1,4 @@
-# HA Pi Panel
+# HAOS OLED Info Display
 
 A Home Assistant OS add-on for the Raspberry Pi that cycles status pages on a small I2C OLED display: SSD1306 128x64 (for example the Dorhea 0.96 inch), SSD1306 128x32 (the common 0.91 inch modules) or SH1106 128x64.
 
@@ -10,14 +10,14 @@ A Home Assistant OS add-on for the Raspberry Pi that cycles status pages on a sm
 
 ## Options
 
-| Option | Meaning |
-| --- | --- |
-| `display_type` | `ssd1306_128x64`, `ssd1306_128x32` or `sh1106_128x64` |
-| `display_i2c_address` | Usually `0x3C`, sometimes `0x3D` |
-| `display_rotate` | Rotation in degrees: 0, 90, 180 or 270 |
-| `display_contrast` | Brightness from 0 to 255 |
-| `display_page_seconds` | How long each page stays on screen |
-| `display_pages_json` | The pages (see below) |
+| Option                   | Meaning                                                     |
+| ------------------------ | ----------------------------------------------------------- |
+| `display_type`         | `ssd1306_128x64`, `ssd1306_128x32` or `sh1106_128x64` |
+| `display_i2c_address`  | Usually`0x3C`, sometimes `0x3D`                         |
+| `display_rotate`       | Rotation in degrees: 0, 90, 180 or 270                      |
+| `display_contrast`     | Brightness from 0 to 255                                    |
+| `display_page_seconds` | How long each page stays on screen                          |
+| `display_pages_json`   | The pages (see below)                                       |
 
 ## Pages
 
@@ -29,13 +29,13 @@ A Home Assistant OS add-on for the Raspberry Pi that cycles status pages on a sm
 
 Tokens in curly braces are filled in each time a page is shown:
 
-| Token | Value |
-| --- | --- |
-| `{hostname}`, `{ip}` | Name and LAN address of the Home Assistant host |
-| `{clock}`, `{date}` | `HH:MM` and `YYYY-MM-DD` |
-| `{uptime_short}` | Host uptime, for example `3d 4h` |
-| `{cpu_temp_c}`, `{cpu_load_1m}` | CPU temperature and 1 minute load average |
-| `{mem_percent}`, `{disk_percent}` | Memory and disk usage in percent |
+| Token                                 | Value                                           |
+| ------------------------------------- | ----------------------------------------------- |
+| `{hostname}`, `{ip}`              | Name and LAN address of the Home Assistant host |
+| `{clock}`, `{date}`               | `HH:MM` and `YYYY-MM-DD`                    |
+| `{uptime_short}`                    | Host uptime, for example`3d 4h`               |
+| `{cpu_temp_c}`, `{cpu_load_1m}`   | CPU temperature and 1 minute load average       |
+| `{mem_percent}`, `{disk_percent}` | Memory and disk usage in percent                |
 
 Home Assistant entities use `{ha:<entity_id>[@<attribute>][,<fallback>...][|<format>]}`:
 
@@ -50,25 +50,33 @@ The default pages:
 
 ```json
 [
-  {"name": "System", "lines": [
-    "#{hostname}\t{clock}",
-    "CPU\t{cpu_temp_c}°C",
-    "RAM\t{mem_percent}%",
-    "Disk\t{disk_percent}%"
-  ]},
-  {"name": "Network", "lines": [
-    "#Network\t{clock}",
-    "IP\t{ip}",
-    "Up\t{uptime_short}",
-    "Load\t{cpu_load_1m}"
-  ]},
-  {"name": "Home", "lines": [
-    "#Home\t{clock}",
-    "Out\t{ha:sensor.outdoor_temperature,weather.forecast_home@temperature,weather.home@temperature|1°C}",
-    "Sky\t{ha:weather.forecast_home,weather.home}",
-    "Hum\t{ha:sensor.outdoor_humidity,weather.forecast_home@humidity|0%}",
-    "Wind\t{ha:weather.forecast_home@wind_speed,weather.home@wind_speed|0 km/h}"
-  ]}
+  {
+    "name": "System",
+    "lines": [
+      "#{hostname}\t{clock}",
+      "CPU\t{cpu_temp_c}°C",
+      "RAM\t{mem_percent}%",
+      "Disk\t{disk_percent}%"
+    ]
+  },
+  {
+    "name": "Network",
+    "lines": [
+      "#Network\t{clock}",
+      "IP\t{ip}",
+      "Up\t{uptime_short}",
+      "Load\t{cpu_load_1m}"
+    ]
+  },
+  {
+    "name": "Home",
+    "lines": [
+      "#Home\t{clock}",
+      "Out. Temp\t{ha:sensor.balcony_temperature_sensor_temperature,weather.forecast_home@temperature}{ha:sensor.balcony_temperature_sensor_temperature@unit_of_measurement,weather.forecast_home@temperature_unit}",
+      "Out. Humid.\t{ha:sensor.balcony_temperature_sensor_humidity,weather.forecast_home@humidity}%",
+      "Out. Wind\t{ha:weather.forecast_home@wind_speed}{ha:weather.forecast_home@wind_speed_unit}"
+    ]
+  }
 ]
 ```
 
