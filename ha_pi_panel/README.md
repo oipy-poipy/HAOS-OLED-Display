@@ -1,30 +1,81 @@
 # HA Pi Panel
 
-HA Pi Panel is a Home Assistant OS add-on for Raspberry Pi 4 that renders status pages on a small I2C OLED display and controls a 5V case fan.
+A Home Assistant OS add-on for the Raspberry Pi that cycles status pages on a small I2C OLED display: SSD1306 128x64 (for example the Dorhea 0.96 inch), SSD1306 128x32 (the common 0.91 inch modules) or SH1106 128x64.
 
-Supported display targets:
+## Setup
 
-- Dorhea 0.96 inch yellow/blue 128x64 I2C OLED, usually SSD1306 at `0x3C`.
-- Generic 0.91 inch blue 128x32 I2C OLED, usually SSD1306 at `0x3C`.
-- SH1106 128x64 is included as an optional display type.
+1. Wire the display to the Pi: VCC to 3.3V or 5V (whichever the module is rated for), GND to GND, SDA to SDA, SCL to SCL.
+2. Enable I2C on Home Assistant OS. On the boot partition, add `dtparam=i2c_arm=on` to `config.txt`, and create `CONFIG/modules/rpi-i2c.conf` containing `i2c-dev`. Reboot the host. The community [HassOS I2C Configurator](https://community.home-assistant.io/t/add-on-hassos-i2c-configurator/264167) add-on can make these changes for you.
+3. Copy this folder to `/addons/ha_pi_panel` on the host, reload the add-on store, and install **HA Pi Panel**.
 
-The add-on is designed for Home Assistant OS. It maps `/dev/i2c-1` and `/dev/gpiochip0` explicitly and does not require host scripts or long-lived Home Assistant tokens.
+## Options
 
-## Installation
+| Option | Meaning |
+| --- | --- |
+| `display_type` | `ssd1306_128x64`, `ssd1306_128x32` or `sh1106_128x64` |
+| `display_i2c_address` | Usually `0x3C`, sometimes `0x3D` |
+| `display_rotate` | Rotation in degrees: 0, 90, 180 or 270 |
+| `display_contrast` | Brightness from 0 to 255 |
+| `display_page_seconds` | How long each page stays on screen |
+| `display_pages_json` | The pages (see below) |
 
-1. Copy this repository into `/addons/ha_pi_panel` on the Home Assistant host, or add the repository as a local add-on repository.
-2. In Home Assistant, go to Settings, Add-ons, Add-on Store, reload local add-ons, and install **HA Pi Panel**.
-3. Start with `mock_hardware: true` for a smoke test.
-4. Enable I2C and connect hardware before switching `mock_hardware` to `false`.
+## Pages
 
-## Wiring Notes
+`display_pages_json` is a JSON list of pages. Each page has a list of `lines`. A 64 pixel high display fits 5 lines, a 32 pixel high one fits 3.
 
-OLED wiring uses the Raspberry Pi I2C pins: VCC, GND, SDA, and SCL. Most SSD1306 modules use address `0x3C`; some use `0x3D`.
+- A line that starts with `#` is drawn as an inverted header bar.
+- A tab (`\t` in JSON) splits a line into a label and a right-aligned value.
+- Text that does not fit is shortened with `…`.
 
-Fan wiring is safety-critical: power the fan from 5V and GND, not from a GPIO pin. GPIO may only be used as a control signal into a suitable transistor, MOSFET, driver board, or PWM input circuit.
+Tokens in curly braces are filled in each time a page is shown:
 
-## Entities
+| Token | Value |
+| --- | --- |
+| `{hostname}`, `{ip}` | Name and LAN address of the Home Assistant host |
+| `{clock}`, `{date}` | `HH:MM` and `YYYY-MM-DD` |
+| `{uptime_short}` | Host uptime, for example `3d 4h` |
+| `{cpu_temp_c}`, `{cpu_load_1m}` | CPU temperature and 1 minute load average |
+| `{mem_percent}`, `{disk_percent}` | Memory and disk usage in percent |
 
-When MQTT is available, Home Assistant discovery creates one device named `HA Pi Panel` with a case fan, system sensors, display switch, fan mode select, and a hardware fault binary sensor.
+Home Assistant entities use `{ha:<entity_id>[@<attribute>][,<fallback>...][|<format>]}`:
 
-See `DOCS.md` for setup, configuration examples, PWM limitations, and troubleshooting.
+- `{ha:sensor.outdoor_temperature}` shows the state.
+- `{ha:weather.forecast_home@temperature}` shows an attribute.
+- `{ha:sensor.outdoor_temperature,weather.forecast_home@temperature}` shows the first one that has a usable value.
+- `|1°C` rounds to 1 decimal and appends `°C`. The format is an optional number of decimals followed by any suffix.
+
+Weather states such as `partlycloudy` are shown as readable labels such as `Part cloud`. A value that cannot be read is shown as `--`.
+
+The default pages:
+
+```json
+[
+  {"name": "System", "lines": [
+    "#{hostname}\t{clock}",
+    "CPU\t{cpu_temp_c}°C",
+    "RAM\t{mem_percent}%",
+    "Disk\t{disk_percent}%"
+  ]},
+  {"name": "Network", "lines": [
+    "#Network\t{clock}",
+    "IP\t{ip}",
+    "Up\t{uptime_short}",
+    "Load\t{cpu_load_1m}"
+  ]},
+  {"name": "Home", "lines": [
+    "#Home\t{clock}",
+    "Out\t{ha:sensor.outdoor_temperature,weather.forecast_home@temperature,weather.home@temperature|1°C}",
+    "Sky\t{ha:weather.forecast_home,weather.home}",
+    "Hum\t{ha:sensor.outdoor_humidity,weather.forecast_home@humidity|0%}",
+    "Wind\t{ha:weather.forecast_home@wind_speed,weather.home@wind_speed|0 km/h}"
+  ]}
+]
+```
+
+## Troubleshooting
+
+- **`I2C device not found: /dev/i2c-1`**: I2C is not enabled. Follow step 2 of the setup and reboot the host.
+- **`I2C device not found on address`**: Check the wiring and `display_i2c_address`. Try `0x3D`.
+- **A value shows `--`**: The add-on log explains why, once per problem. A missing entity is logged as `HTTP Error 404`. Entity ids are case sensitive and are listed under Developer Tools, States. If nothing is logged, the entity exists but its value is unknown, unavailable, or the attribute name is wrong.
+- **Turning the display off**: Stop the add-on. The display is blanked on exit, and automations can do this with the `hassio.addon_stop` and `hassio.addon_start` actions.
+- **The add-on stopped after an error**: Turn on Watchdog on the add-on page and it will be restarted automatically.
