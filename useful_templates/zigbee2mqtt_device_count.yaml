@@ -1,0 +1,9 @@
+- name: "Zigbee2MQTT Device Count"
+  unique_id: zigbee2mqtt_device_count
+  state_topic: "zigbee2mqtt/bridge/devices"
+  value_template: "{{ value_json | length }}"
+  icon: mdi:zigbee
+  state_class: measurement
+  unit_of_measurement: "devices"
+
+# And then you can just stick this into the display info.
