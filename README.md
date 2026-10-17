@@ -25,14 +25,15 @@ Tested on a Pi 5 connected to an 1.3" SH1106 display module, with HAOS 2026.10.1
 
 ## Options
 
-| Option                   | Meaning                                                     |
-| ------------------------ | ----------------------------------------------------------- |
-| `display_type`         | `ssd1306_128x64`, `ssd1306_128x32` or `sh1106_128x64` |
-| `display_i2c_address`  | Usually`0x3C`, sometimes `0x3D`                         |
-| `display_rotate`       | Rotation in degrees: 0, 90, 180 or 270                      |
-| `display_contrast`     | Brightness from 0 to 255                                    |
-| `display_page_seconds` | How long each page stays on screen                          |
-| `display_pages_json`   | The pages (see below)                                       |
+| Option                   | Meaning                                                                                                                                             |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `display_type`         | `ssd1306_128x64`, `ssd1306_128x32` or `sh1106_128x64`                                                                                         |
+| `display_i2c_address`  | Usually`0x3C`, sometimes `0x3D`                                                                                                                 |
+| `display_rotate`       | Rotation in degrees: 0, 90, 180 or 270                                                                                                              |
+| `display_contrast`     | Brightness from 0 to 255                                                                                                                            |
+| `display_page_seconds` | How long each page stays on screen                                                                                                                  |
+| `display_pages_json`   | The pages (see below)                                                                                                                               |
+| `log_level`            | How much data is logged into the HASS log for the add-on (DEBUG shows what's being displayed on the screen each time it changes page, for example.) |
 
 ## Pages
 
@@ -44,13 +45,13 @@ Tested on a Pi 5 connected to an 1.3" SH1106 display module, with HAOS 2026.10.1
 
 Tokens in curly braces are filled in each time a page is shown:
 
-| Token                                 | Value                                           |
-| ------------------------------------- | ----------------------------------------------- |
-| `{hostname}`, `{ip}`              | Name and LAN address of the Home Assistant host |
-| `{clock}`, `{date}`               | `HH:MM` and `YYYY-MM-DD`                    |
-| `{uptime_short}`                    | Host uptime, for example`3d 4h`               |
-| `{cpu_temp_c}`, `{cpu_load_1m}`   | CPU temperature and 1 minute load average       |
-| `{mem_percent}`, `{disk_percent}` | Memory and disk usage in percent                |
+| Token                                   | Value                                                          |
+| --------------------------------------- | -------------------------------------------------------------- |
+| `{hostname}`, `{ip}`, `{gateway}` | Name, LAN address and LAN gateway of the Home Assistant host |
+| `{clock}`, `{date}`                 | `HH:MM` and `YYYY-MM-DD`                                   |
+| `{uptime_short}`                      | Host uptime, for example`3d 4h`                              |
+| `{cpu_temp_c}`, `{cpu_load_1m}`     | CPU temperature and 1 minute load average                      |
+| `{mem_percent}`, `{disk_percent}`   | Memory and disk usage in percent                               |
 
 *Note - I like showing the load as %, so instead of 0.1 it will be 10%, 2.0 will be 200% and so on. I think it also makes more sense here since I don't think I've ever seen my fairly large HASS setup go above a 1.0 load avg.*
 
@@ -81,6 +82,7 @@ The default pages:
     "lines": [
       "#Network\t{clock}",
       "IP\t{ip}",
+      "Gateway\t{gateway}",
       "Up\t{uptime_short}",
       "Load\t{cpu_load_1m}"
     ]

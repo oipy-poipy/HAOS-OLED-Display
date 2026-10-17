@@ -52,11 +52,19 @@ def supervisor(path):
         return json.load(response)
 
 
-def host_ip():
+def _get_primary_net_interface():
     # The add-on container has an address of its own, so ask the Supervisor for the host's.
     interfaces = supervisor("/network/info")["data"]["interfaces"]
     primary = next(interface for interface in interfaces if interface["primary"])
-    return primary["ipv4"]["address"][0].split("/")[0]
+    return primary
+
+
+def host_ip():
+    return _get_primary_net_interface()["ipv4"]["address"][0].split("/")[0]
+
+
+def host_gateway():
+    return _get_primary_net_interface()["ipv4"]["gateway"]
 
 
 def uptime():
@@ -85,11 +93,12 @@ def disk_percent():
 TOKENS = {
     "hostname": lambda: supervisor("/host/info")["data"]["hostname"],
     "ip": host_ip,
+    "gateway": host_gateway,
     "clock": lambda: time.strftime("%H:%M"),
     "date": lambda: time.strftime("%Y-%m-%d"),
     "uptime_short": uptime,
     "cpu_temp_c": lambda: f"{int(Path('/sys/class/thermal/thermal_zone0/temp').read_text()) / 1000:.1f}",
-    # 0.45424 -> 45.424 -> 45.4%
+    # CPU load: 0.45424 -> 45.424 -> 45.4%
     "cpu_load_1m": lambda: f"{os.getloadavg()[0]*100:.1f}",
     "mem_percent": mem_percent,
     "disk_percent": disk_percent,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+Add `{gateway}` token.
+
 ## 0.1.4
 
 Fix logging config getter.
