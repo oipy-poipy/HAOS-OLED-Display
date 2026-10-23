@@ -53,7 +53,7 @@ def supervisor(path):
 
 
 def _get_primary_net_interface():
-    # The add-on container has an address of its own, so ask the Supervisor for the host's.
+    # The app container has an address of its own, so ask the Supervisor for the host's.
     interfaces = supervisor("/network/info")["data"]["interfaces"]
     primary = next(interface for interface in interfaces if interface["primary"])
     return primary

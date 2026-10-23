@@ -4,24 +4,34 @@
 
 [![Code style: black](<https://img.shields.io/badge/code%20style-black-000000.svg>)](https://github.com/psf/black) [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0) ![Made by a Puppy :3](puppybadge.svg)
 
-A Home Assistant OS add-on that cycles status pages on a small I2C OLED display. Intended to be used on Raspberry Pi hosts.
+A Home Assistant App that cycles status pages on a small I2C OLED display. Intended to be used on Raspberry Pi hosts.
 
 Works with:
 
 - SSD1306 128x64 (for example the Dorhea 0.96 inch)
 - SSD1306 128x32 (the common 0.91 inch modules)
-- SH1106 128x64  (clones of the SSD ones, but work good too)
+- SH1106 128x64  (clones of the SSD ones, but usually work good too)
 
 Tested on a Pi 5 connected to an 1.3" SH1106 display module, with HAOS 2026.10.1.
 
 ## Setup
 
-1. Wire the display to the Pi: VCC to 3.3V or 5V (whichever the module is rated for), GND to GND, SDA to SDA, SCL to SCL. You can use [pinout.xyz](https://pinout.xyz) to locate those pins on your specific Pi.
-2. Enable I2C on Home Assistant OS. The community [HassOS I2C Configurator](https://community.home-assistant.io/t/add-on-hassos-i2c-configurator/264167) add-on can make these changes for you, I tried doing it myself but couldn't really figure it out.
-3. Go to the *Apps* section in your HASS settings, then click *Install app* on the bottom right. Click the three dots on the top right, select *Repositories* and add the URL to this repository. ([github.com/oipy-poipy/HAOS-OLED-Display.git](https://github.com/oipy-poipy/HAOS-OLED-Display.git))
-4. Go back to the initial *Apps* section, click the refresh icon on the top right, then pres *Install app* again and you should see this addon in the installable apps. Install it.
+[![Open your Home Assistant instance and show the add app repository dialog with this repository's URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Foipy-poipy%2FHAOS-OLED-Display)
 
-(You can also do the installation manually by copying the contents of the `ha_pi_panel` directory to `/addons/ha_pi_panel` using the File Editor. You won't be able to get automatic updates though.)
+1. **Wire the display to the Pi.**
+  
+   Connect the display's VCC to 3.3V or 5V (whichever the module is rated for), GND to GND, SDA to SDA, SCL to SCL. You can use [pinout.xyz](https://pinout.xyz) to locate those pins on your specific Pi.
+2. **Enable I2C on Home Assistant OS.**
+
+   The community [HassOS I2C Configurator](https://community.home-assistant.io/t/add-on-hassos-i2c-configurator/264167) App can make these changes for you, I tried doing it myself but couldn't really figure it out.
+3. **Add this repository using the large button above.**
+
+   If you don't want to do that, go to the *Apps* section in your HASS settings, then click *Install app* on the bottom right. Click the three dots on the top right, select *Repositories* and add the URL to this repository. ([github.com/oipy-poipy/HAOS-OLED-Display.git](https://github.com/oipy-poipy/HAOS-OLED-Display.git))
+4. **Install the App.**
+
+   Go back to the initial *Apps* section, click the refresh icon on the top right, then pres *Install app* again and you should see this addon in the installable apps. Install it.
+
+> _Note:_ You can also perform the installation manually by copying the contents of the `ha_pi_panel` directory to `/addons/ha_pi_panel` using the File Editor. You won't be able to get automatic updates though.
 
 ## Options
 
@@ -33,7 +43,7 @@ Tested on a Pi 5 connected to an 1.3" SH1106 display module, with HAOS 2026.10.1
 | `display_contrast`     | Brightness from 0 to 255                                                                                                                            |
 | `display_page_seconds` | How long each page stays on screen                                                                                                                  |
 | `display_pages_json`   | The pages (see below)                                                                                                                               |
-| `log_level`            | How much data is logged into the HASS log for the add-on (DEBUG shows what's being displayed on the screen each time it changes page, for example.) |
+| `log_level`            | How much data is logged into the HASS log for the App (DEBUG shows what's being displayed on the screen each time it changes page, for example.) |
 
 ## Pages
 
@@ -42,6 +52,8 @@ Tested on a Pi 5 connected to an 1.3" SH1106 display module, with HAOS 2026.10.1
 - A line that starts with `#` is drawn as an inverted header bar.
 - A tab (`\t` in JSON) splits a line into a label and a right-aligned value.
 - Text that does not fit is shortened with `…`.
+
+### Page tokens
 
 Tokens in curly braces are filled in each time a page is shown:
 
@@ -53,7 +65,9 @@ Tokens in curly braces are filled in each time a page is shown:
 | `{cpu_temp_c}`, `{cpu_load_1m}`     | CPU temperature and 1 minute load average                      |
 | `{mem_percent}`, `{disk_percent}`   | Memory and disk usage in percent                               |
 
-*Note - I like showing the load as %, so instead of 0.1 it will be 10%, 2.0 will be 200% and so on. I think it also makes more sense here since I don't think I've ever seen my fairly large HASS setup go above a 1.0 load avg.*
+> *Note:* I like showing the load as %, so instead of 0.1 it will be 10%, 2.0 will be 200% and so on. I think it also makes more sense here since I don't think I've ever seen my fairly large HASS setup go above a 1.0 load avg.*
+
+### Adding HA entities as tokens
 
 Home Assistant entities use `{ha:<entity_id>[@<attribute>][,<fallback>...][|<format>]}`:
 
@@ -64,7 +78,7 @@ Home Assistant entities use `{ha:<entity_id>[@<attribute>][,<fallback>...][|<for
 
 Weather states such as `partlycloudy` are shown as readable labels such as `Part cloud`. A value that cannot be read is shown as `--`.
 
-The default pages:
+### Default pages
 
 ```json
 [
@@ -103,13 +117,16 @@ The default pages:
 
 - **`I2C device not found: /dev/i2c-1`**: I2C is not enabled. Follow step 2 of the setup and reboot the host.
 - **`I2C device not found on address`**: Check the wiring and `display_i2c_address`. Try `0x3D`.
-- **A value shows `--`**: The add-on log explains why, once per problem. A missing entity is logged as `HTTP Error 404`. Entity ids are case sensitive and are listed under Developer Tools, States. If nothing is logged, the entity exists but its value is unknown, unavailable, or the attribute name is wrong.
-- **Turning the display off**: Stop the add-on. The display is blanked on exit, and automations can do this with the `hassio.addon_stop` and `hassio.addon_start` actions.
-- **The add-on stopped after an error**: Turn on Watchdog on the add-on page and it will be restarted automatically.
+- **A value shows `--`**: The App log explains why, once per problem. A missing entity is logged as `HTTP Error 404`. Entity ids are case sensitive and are listed under Developer Tools, States. If nothing is logged, the entity exists but its value is unknown, unavailable, or the attribute name is wrong.
+- **Turning the display off**: Stop the App. The display is blanked on exit, and automations can do this with the `hassio.addon_stop` and `hassio.addon_start` actions.
+- **The App stopped after an error**: Turn on Watchdog on the App page and it will be restarted automatically.
 
 ## Showcase
 
-<img src="oled_sample.png" alt="Example of the addon being used" width="600"/>
+<img src="oled_sample_1.jpg" alt="Example 1 of the addon being used" width="600"/>
+
+<img src="oled_sample_2.jpg" alt="Example 2 of the addon being used" width="600"/>
+
 
 ## AI Disclosure
 

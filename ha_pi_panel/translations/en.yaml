@@ -16,7 +16,7 @@ configuration:
     description: How long each page stays on screen.
   display_pages_json:
     name: Pages
-    description: JSON list of pages. The add-on documentation explains the line format and tokens.
+    description: JSON list of pages. The app documentation explains the line format and tokens.
   log_level:
     name: Logging level
     description: Default is INFO, if you set this to DEBUG you can see what's being drawn on the screen in the logging tab.
