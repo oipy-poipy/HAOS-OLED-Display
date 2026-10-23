@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6
+
+- Updated README with more info & example use cases
+- Changed terminology from "Add-on" to "App". The original term is no longer used for HASS.
+- Fixed a crash when an entity value contains a line break, and a slowdown on very long values.
+- Security fixes
+
 ## 0.1.5
 
 Add `{gateway}` token.

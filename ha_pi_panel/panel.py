@@ -157,6 +157,8 @@ def fill(text):
 
 def fit(draw, text, width):
     """Shorten text with an ellipsis until it is at most width pixels wide."""
+    # Pillow cannot measure line breaks, and long values make this loop slow.
+    text = text.replace("\n", " ")[:200]  # More than any line can show.
     while len(text) > 1 and draw.textlength(text, font=FONT) > width:
         text = text[:-2] + "…"
     return text

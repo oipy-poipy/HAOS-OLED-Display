@@ -7,7 +7,7 @@ RUN apk add --no-cache python3 \
     && /opt/venv/bin/pip install --no-cache-dir \
       luma.core==2.6.0 \
       luma.oled==3.16.0 \
-      pillow==12.3.0 \
+      pillow==13.0.0 \
       smbus2==0.6.1
 
 COPY panel.py /

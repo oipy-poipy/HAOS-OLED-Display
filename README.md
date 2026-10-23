@@ -59,7 +59,7 @@ Tokens in curly braces are filled in each time a page is shown:
 
 | Token                                   | Value                                                          |
 | --------------------------------------- | -------------------------------------------------------------- |
-| `{hostname}`, `{ip}`, `{gateway}` | Name, LAN address and LAN gateway of the Home Assistant host |
+| `{hostname}`, `{ip}`, `{gateway}` | Name, LAN address and LAN gateway of the Home Assistant host |
 | `{clock}`, `{date}`                 | `HH:MM` and `YYYY-MM-DD`                                   |
 | `{uptime_short}`                      | Host uptime, for example`3d 4h`                              |
 | `{cpu_temp_c}`, `{cpu_load_1m}`     | CPU temperature and 1 minute load average                      |
